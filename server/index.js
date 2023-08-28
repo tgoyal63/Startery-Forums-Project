@@ -1,10 +1,12 @@
 // Import required modules
 const express = require("express");
 const config = require("./config/config");
-const logger = require("./utils/logger");
+const logger = require("./utils/logger.utils");
 const commonMiddlewares = require("./middlewares/common");
 const errorHandler = require("./middlewares/error");
 const connectDB = require("./utils/db.utils");
+const { APIError } = require("./utils/error.utils");
+const { CLIENT_ERROR } = require("./config/httpStatusCodes");
 
 // Create an instance of the Express application
 const app = express();
@@ -17,8 +19,15 @@ app.get("/", (req, res) => {
   res.send("Welcome to Startery Forums Project - Backend!");
 });
 
-// Use the error handler middleware
-app.use(errorHandler);
+// Define a 404 Error
+app.all("*", (req, res) => {
+  throw new APIError(
+    "CLIENT_ERROR",
+    CLIENT_ERROR.NOT_FOUND,
+    false,
+    "Not Found"
+  );
+});
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err, promise) => {
@@ -28,12 +37,17 @@ process.on("unhandledRejection", (err, promise) => {
   server.close(() => process.exit(1));
 });
 
+// Use the error handler middleware
+app.use(errorHandler);
+
 // Start the server and listen for incoming requests
 connectDB()
   .then(() => {
     const server = app.listen(config.port, () => {
       console.log(
-        `Server is running at http://localhost:${config.port} in ${config.env} mode`
+        `Server is running at http://localhost:${config.port}, Environment: ${
+          config.isDevEnvironment ? "dev" : "prod"
+        }`
       );
     });
   })

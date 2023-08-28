@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "Tushar Goyal (tgoyal63@gmail.com)",
@@ -22,5 +23,8 @@
     "mongoose": "^7.4.3",
     "morgan": "^1.10.0",
     "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

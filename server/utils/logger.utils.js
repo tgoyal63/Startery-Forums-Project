@@ -2,28 +2,28 @@
 const winston = require("winston");
 const fs = require("fs");
 const path = require("path");
-const config = require("../config/config");
+const { isDevEnvironment, logDirectory } = require("../config/config");
 
 // Create log directory if it doesn't exist
-fs.existsSync(config.logDirectory) || fs.mkdirSync(config.logDirectory);
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
 
 // Setup winston logger
 const logger = winston.createLogger({
-  level: "info",
+  level: isDevEnvironment ? "debug" : "info",
   format: winston.format.json(),
   transports: [
     new winston.transports.File({
-      filename: path.join(config.logDirectory, "/error.log"),
+      filename: path.join(logDirectory, "/error.log"),
       level: "error",
     }),
     new winston.transports.File({
-      filename: path.join(config.logDirectory, "/combined.log"),
+      filename: path.join(logDirectory, "/combined.log"),
     }),
   ],
 });
 
 // If we're not in production, log to the `console` with the format: `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-if (config.env !== "production") {
+if (isDevEnvironment) {
   logger.add(
     new winston.transports.Console({
       format: winston.format.simple(),

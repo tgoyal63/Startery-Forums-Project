@@ -6,7 +6,7 @@ module.exports = {
   port: parseInt(process.env.APP_PORT, 10) || 3000,
 
   // Environment mode (development, production, etc.)
-  env: process.env.NODE_ENV || "development",
+  isDevEnvironment: process.env.NODE_ENV === "development",
 
   // Directory for log files
   logDirectory: process.env.LOG_DIRECTORY || "./log",
@@ -19,4 +19,7 @@ module.exports = {
 
   // MongoDB connection URI
   mongoURI: process.env.MONGO_URI || "mongodb://localhost:27017/startery_forum",
+
+  // JWT Secret
+  jwtSecret: process.env.JWT_SECRET || "secret",
 };
