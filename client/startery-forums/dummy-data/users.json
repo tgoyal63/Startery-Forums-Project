@@ -1,0 +1,40 @@
+[
+  {
+    "_id": "user1",
+    "username": "user123",
+    "email": "user123@example.com",
+    "password": "hashedpassword123",
+    "profilePicture": "/pfp1.png",
+    "bio": "Hello, I'm a dummy user!",
+    "settings": {
+      "theme": "dark",
+      "notifications": true
+    },
+    "posts": ["post1", "post2"],
+    "comments": ["comment1", "comment2"],
+    "upvotes": ["post1"],
+    "downvotes": [],
+    "subscriptions": ["category1", "category2"],
+    "createdAt": "2023-08-01T12:00:00Z",
+    "updatedAt": "2023-08-10T15:30:00Z"
+  },
+  {
+    "_id": "user2",
+    "username": "exampleuser",
+    "email": "exampleuser@example.com",
+    "password": "hashedpassword456",
+    "profilePicture": "/pfp2.png",
+    "bio": "I'm just here to test things!",
+    "settings": {
+      "theme": "light",
+      "notifications": false
+    },
+    "posts": [],
+    "comments": ["comment3"],
+    "upvotes": [],
+    "downvotes": ["post2"],
+    "subscriptions": ["category1"],
+    "createdAt": "2023-08-05T09:30:00Z",
+    "updatedAt": "2023-08-15T18:45:00Z"
+  }
+]

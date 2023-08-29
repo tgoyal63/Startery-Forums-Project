@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "notification1",
+    "user": "user1",
+    "content": "You have a new follower!",
+    "read": false,
+    "createdAt": "2023-08-10T16:00:00Z"
+  },
+  {
+    "_id": "notification2",
+    "user": "user2",
+    "content": "Your post received an upvote.",
+    "read": true,
+    "createdAt": "2023-08-12T09:45:00Z"
+  }
+]

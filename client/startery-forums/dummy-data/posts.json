@@ -1,0 +1,28 @@
+[
+  {
+    "_id": "post1",
+    "title": "My First Post",
+    "content": "This is the content of my first post.",
+    "author": "user1",
+    "category": "category1",
+    "upvotes": ["user1"],
+    "downvotes": [],
+    "comments": ["comment1"],
+    "views": 120,
+    "createdAt": "2023-08-02T08:00:00Z",
+    "updatedAt": "2023-08-02T08:30:00Z"
+  },
+  {
+    "_id": "post2",
+    "title": "Interesting Topic",
+    "content": "Let's discuss something interesting.",
+    "author": "user2",
+    "category": "category2",
+    "upvotes": [],
+    "downvotes": ["user2"],
+    "comments": [],
+    "views": 45,
+    "createdAt": "2023-08-07T14:20:00Z",
+    "updatedAt": "2023-08-07T14:20:00Z"
+  }
+]
