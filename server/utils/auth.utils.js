@@ -3,7 +3,7 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userService = require("../services/user.service.js");
 const { jwtSecret } = require("../config/config");
-const { APIError } = require("./error.utils.js");
+const { CustomError } = require("./error.utils.js");
 const { CLIENT_ERROR } = require("../config/httpStatusCodes.js");
 
 /**
@@ -13,7 +13,7 @@ const { CLIENT_ERROR } = require("../config/httpStatusCodes.js");
  * @returns {Object} data - Data from database
  */
 const checkExist = async (entity, entityValue) => {
-  const data = await userService.searchByEntity(entity, entityValue);
+  const data = await userService.searchByEntity(entity, entityValue, 1);
   return data;
 };
 
@@ -54,7 +54,7 @@ const hashPassword = (password) => {
  * Function to validate user data
  * @param {Object} data - User data
  * @returns {Object} res - User data from database
- * @throws {APIError} If user not found or password is invalid
+ * @throws {CustomError} If user not found or password is invalid
  */
 const validateUser = async (data) => {
   let res;
@@ -64,16 +64,20 @@ const validateUser = async (data) => {
   else if (data.hasOwnProperty("email"))
     res = await checkExist("email", data.email);
   if (!res)
-    throw new APIError(
+    throw new CustomError(
       "Client Error",
       CLIENT_ERROR.NOT_FOUND,
-      true,
       "User not found!"
     );
 
   // Checking if password is valid or not
   const isPasswordValid = checkPassword(data.password, res.password);
-  if (!isPasswordValid) throw new APIError(401, "Invalid Password!");
+  if (!isPasswordValid)
+    throw new CustomError(
+      "Client Error",
+      CLIENT_ERROR.UNAUTHORIZED,
+      "Invalid Password!"
+    );
   return res;
 };
 

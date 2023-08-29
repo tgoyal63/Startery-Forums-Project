@@ -5,9 +5,10 @@ const logger = require("./utils/logger.utils");
 const commonMiddlewares = require("./middlewares/common");
 const errorHandler = require("./middlewares/error");
 const connectDB = require("./utils/db.utils");
-const { APIError } = require("./utils/error.utils");
+const { CustomError } = require("./utils/error.utils");
 const { CLIENT_ERROR } = require("./config/httpStatusCodes");
 const authRouter = require("./routes/auth.routes");
+const userRouter = require("./routes/user.routes");
 
 // Create an instance of the Express application
 const app = express();
@@ -22,18 +23,20 @@ app.get("/", (req, res) => {
 
 // Defining Routers
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 // Define a 404 Error
 app.all("*", (req, res, next) => {
-  throw new APIError("CLIENT_ERROR", CLIENT_ERROR.NOT_FOUND, true, "Not Found");
+  throw new CustomError("Client Error", CLIENT_ERROR.NOT_FOUND, "Not Found");
 });
 
-// Handle uncaught rejections
-process.on("unhandledRejection", (error) => {
-  errorHandler.handleError(error);
-  if (!errorHandler.isTrustedError(error)) {
+// Handle uncaught exceptions
+process.on("uncaughtException", async (err) => {
+  logger.error(`Uncaught Exception: ${err.message}`);
+  if (!errorHandler.isTrustedError(err)) {
     process.exit(1);
   }
+  await errorHandler.handleError(err);
 });
 
 // Use the error handler middleware

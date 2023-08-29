@@ -80,6 +80,7 @@ const INFORMATIONAL = {
     NETWORK_AUTHENTICATION_REQUIRED: 511
   };
   
+  // Export all status codes
   module.exports = {
     INFORMATIONAL,
     SUCCESSFUL,

@@ -10,10 +10,10 @@ class ControllerUtils {
   static controllerBoilerPlate(wrapped) {
     return (req, res, next) =>
       wrapped(req, res, next)
-        .then((response) => res.status(response.statusCode).send(response))
         .catch((err) => {
           next(err);
-        });
+        })
+        .then((response) => res.status(response.statusCode).send(response));
   }
 }
 

@@ -1,4 +1,4 @@
-const {SERVER_ERROR} = require("../config/httpStatusCodes");
+const { SERVER_ERROR } = require("../config/httpStatusCodes");
 
 /**
  * BaseError class that extends built-in Error class.
@@ -8,11 +8,11 @@ class BaseError extends Error {
   /**
    * @param {string} name - The name of the error.
    * @param {number} statusCode - The HTTP status code of the error.
-   * @param {string} description - The description of the error.
+   * @param {string} message - The error message.
    * @param {boolean} isOperational - Flag to indicate if the error is operational.
    */
-  constructor(name, statusCode, description, isOperational) {
-    super(description);
+  constructor(name, statusCode, message, isOperational) {
+    super(message);
     Object.setPrototypeOf(this, new.target.prototype);
 
     this.name = name;
@@ -24,28 +24,28 @@ class BaseError extends Error {
 }
 
 /**
- * APIError class that extends BaseError class.
+ * CustomError class that extends BaseError class.
  * It provides structure for API related errors.
  */
-class APIError extends BaseError {
+class CustomError extends BaseError {
   /**
    * @param {string} name - The name of the error.
    * @param {number} [statusCode=500] - The HTTP status code of the error. Default is 500.
+   * @param {string} [message="internal server error"] - The error message. Default is "internal server error".
    * @param {boolean} [isOperational=true] - Flag to indicate if the error is operational. Default is true.
-   * @param {string} [description="internal server error"] - The description of the error. Default is "internal server error".
    */
   constructor(
     name,
     statusCode = SERVER_ERROR.INTERNAL_SERVER_ERROR,
-    isOperational = true,
-    description = "internal server error"
+    message = "internal server error",
+    isOperational = true
   ) {
-    super(name, statusCode, description, isOperational);
+    super(name, statusCode, message, isOperational);
   }
 }
 
 // Exporting the classes and objects for external use.
 module.exports = {
   BaseError,
-  APIError,
+  CustomError,
 };
