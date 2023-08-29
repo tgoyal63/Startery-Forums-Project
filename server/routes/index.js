@@ -1,7 +1,7 @@
 const express = require("express");
 const { ValidationError } = require("express-validation");
 const { SERVER_ERROR } = require("../config/httpStatusCodes");
-const { APIError } = require("../utils/error.utils");
+const { CustomError } = require("../utils/error.utils");
 const logger = require("../utils/logger.utils");
 
 class BaseRouter {
@@ -19,10 +19,9 @@ class BaseRouter {
       if (err) {
         const { name, details, statusCode } = err;
         if (err instanceof ValidationError) {
-          throw new APIError(
+          throw new CustomError(
             "Validation Error",
             statusCode,
-            true,
             `${name}: ${details.body[0].context.message || details.body[0].message}`
           );
         }

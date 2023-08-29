@@ -15,10 +15,10 @@ class UserService {
   });
 
   // Searching for user in database
-  searchByEntity = serviceBoilerPlate(async (entity, entityValue) => {
+  searchByEntity = serviceBoilerPlate(async (entity, entityValue, sensitive = 0) => {
     const query = {};
     if (entity === "_id") {
-      query._id = ObjectId(entityValue);
+      query._id = new ObjectId(entityValue);
     } else if (entity === "username") {
       query.username = entityValue;
     } else if (entity === "email") {
@@ -31,29 +31,33 @@ class UserService {
         true
       );
     }
+    let projectFields = {
+      name: 1,
+      username: 1,
+      email: 1,
+      profilePicture: 1,
+      bio: 1,
+      settings: 1,
+      postsCount: { $size: "$posts" },
+      commentsCount: { $size: "$comments" },
+      upvotesCount: { $size: "$upvotes" },
+      downvotesCount: { $size: "$downvotes" },
+      subscriptionsCount: { $size: "$subscriptions" },
+      _id: 0,
+    };
+
+    if (sensitive)  {
+      projectFields.token = 1;
+      projectFields.password = 1;
+      projectFields._id = 1;
+    }
+    
     const data = await user
       .aggregate([
-        {
-          $lookup: {
-            from: upvote.collection.name,
-            localField: "upvotes",
-            foreignField: "_id",
-            as: "upvotes",
-            let: { upvotes: "$upvotes" },
-            pipeline: [{ $project: { status: 1, _id: 0 } }],
-          },
-        },
-        {
-          $lookup: {
-            from: downvote.collection.name,
-            localField: "downvotes",
-            foreignField: "_id",
-            as: "downvotes",
-            let: { votes: "$downvotes" },
-            pipeline: [{ $project: { status: 1, _id: 0 } }],
-          },
-        },
         { $match: query },
+        {
+          $project: projectFields,
+        },
       ])
       .exec();
     return data[0];
