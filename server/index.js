@@ -7,6 +7,7 @@ const errorHandler = require("./middlewares/error");
 const connectDB = require("./utils/db.utils");
 const { APIError } = require("./utils/error.utils");
 const { CLIENT_ERROR } = require("./config/httpStatusCodes");
+const authRouter = require("./routes/auth.routes");
 
 // Create an instance of the Express application
 const app = express();
@@ -19,36 +20,41 @@ app.get("/", (req, res) => {
   res.send("Welcome to Startery Forums Project - Backend!");
 });
 
+// Defining Routers
+app.use("/auth", authRouter);
+
 // Define a 404 Error
-app.all("*", (req, res) => {
-  throw new APIError(
-    "CLIENT_ERROR",
-    CLIENT_ERROR.NOT_FOUND,
-    false,
-    "Not Found"
-  );
+app.all("*", (req, res, next) => {
+  throw new APIError("CLIENT_ERROR", CLIENT_ERROR.NOT_FOUND, true, "Not Found");
 });
 
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (err, promise) => {
-  // Log the unhandled rejection error
-  logger.error(`Unhandled Rejection at: ${promise}, reason: ${err.message}`);
-  // Close the server and exit the process
-  server.close(() => process.exit(1));
+// Handle uncaught rejections
+process.on("unhandledRejection", (error) => {
+  errorHandler.handleError(error);
+  if (!errorHandler.isTrustedError(error)) {
+    process.exit(1);
+  }
 });
 
 // Use the error handler middleware
-app.use(errorHandler);
+app.use(async (err, req, res, next) => {
+  if (!errorHandler.isTrustedError(err)) {
+    next(err);
+  }
+  await errorHandler.handleError(err, req, res, next);
+});
 
 // Start the server and listen for incoming requests
 connectDB()
   .then(() => {
     const server = app.listen(config.port, () => {
-      console.log(
+      logger.info(
         `Server is running at http://localhost:${config.port}, Environment: ${
           config.isDevEnvironment ? "dev" : "prod"
         }`
       );
     });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    throw err;
+  });
