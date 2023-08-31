@@ -2,9 +2,8 @@ const { Schema, model } = require("mongoose");
 
 const CategorySchema = new Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     description: String,
-    posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     subscribers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }

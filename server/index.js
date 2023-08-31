@@ -9,6 +9,8 @@ const { CustomError } = require("./utils/error.utils");
 const { CLIENT_ERROR } = require("./config/httpStatusCodes");
 const authRouter = require("./routes/auth.routes");
 const userRouter = require("./routes/user.routes");
+const postRouter = require("./routes/post.routes");
+const categoryRouter = require("./routes/category.routes");
 
 // Create an instance of the Express application
 const app = express();
@@ -24,6 +26,8 @@ app.get("/", (req, res) => {
 // Defining Routers
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/posts", postRouter)
+app.use("/category", categoryRouter);
 
 // Define a 404 Error
 app.all("*", (req, res, next) => {

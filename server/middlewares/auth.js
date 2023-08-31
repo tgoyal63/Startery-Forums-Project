@@ -1,11 +1,12 @@
-// Importing Node Modules
+// Importing Required Modules
 const jwt = require("jsonwebtoken");
 const { CustomError } = require("../utils/error.utils.js");
 const { jwtSecret } = require("../config/config");
-
-// Importing File Dependencies
 const { checkExist } = require("../utils/auth.utils.js");
 const { CLIENT_ERROR } = require("../config/httpStatusCodes.js");
+const post = require("../models/post.model");
+const comment = require("../models/comment.model");
+const user = require("../models/user.model");
 
 class AuthMiddleware {
   static async verifyToken(req, res, next) {
@@ -51,12 +52,49 @@ class AuthMiddleware {
       if (err.name === "JsonWebTokenError" || !err.status)
         return res.status(CLIENT_ERROR.UNAUTHORIZED).send({
           statusCode: CLIENT_ERROR.UNAUTHORIZED,
-          message: "Access denied! Invalid User Token.",
+          message: err.message,
         });
       return res
         .status(err.status)
         .send({ statusCode: err.status, message: err.message });
     }
+  }
+
+  static verifyPermission(docType) {
+    return async (req, res, next) => {
+      try {
+        const model =
+          docType === "Post" ? post : docType === "Comment" ? comment : user;
+        const data = await model.findById(req.params.id || req.id);
+        console.log(data);
+        if (!data)
+          throw new CustomError(
+            "Client Error",
+            CLIENT_ERROR.NOT_FOUND,
+            `${docType} Not Found`
+          );
+        if (
+          (docType === "user" &&
+            data._id.toString() !== req.user._id.toString()) ||
+          data.author?.toString() !== req.user._id.toString()
+        )
+          throw new CustomError(
+            "Client Error",
+            CLIENT_ERROR.FORBIDDEN,
+            "Not Authorized"
+          );
+        next();
+      } catch (err) {
+        if (!err.status)
+          return res.status(CLIENT_ERROR.UNAUTHORIZED).send({
+            statusCode: CLIENT_ERROR.UNAUTHORIZED,
+            message: err.message,
+          });
+        return res
+          .status(err.status)
+          .send({ statusCode: err.status, message: err.message });
+      }
+    };
   }
 }
 
