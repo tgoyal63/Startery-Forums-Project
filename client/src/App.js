@@ -1,9 +1,9 @@
 
 import './App.css';
 import { Routes, Route } from "react-router-dom"
-import Navbar from './components/Navbar';
 import ForumPg from './components/ForumPg';
 import Landing from './components/Landing';
+import ThreadCard from './components/ThreadCard';
 
 
 
@@ -13,6 +13,7 @@ function App() {
      <Routes>
      <Route path="/" element={ <Landing/> } />
      <Route path="ForumPg" element={<ForumPg/>}/>
+     <Route path="ThreadCard" element={<ThreadCard/>}/>
    
      
      
