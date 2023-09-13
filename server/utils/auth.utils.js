@@ -60,9 +60,9 @@ const validateUser = async (data) => {
   let res;
   // Checking if user exists in database
   if (data.hasOwnProperty("username"))
-    res = await checkExist("username", data.username);
+    res = await checkExist("username", data.username.toLowerCase());
   else if (data.hasOwnProperty("email"))
-    res = await checkExist("email", data.email);
+    res = await checkExist("email", data.email.toLowerCase());
   if (!res)
     throw new CustomError(
       "Client Error",
