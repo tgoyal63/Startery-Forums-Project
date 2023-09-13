@@ -32,9 +32,6 @@ class AuthController {
   });
 
   login = controllerBoilerPlate(async (req, res) => {
-    // Convert username and email to lowercase
-    req.body.username = req.body.username?.toLowerCase();
-    req.body.email = req.body.email?.toLowerCase();
     const { token } = await validateUser(req.body);
     return controllerResponse(SUCCESSFUL.OK, "Logged In Successfully!", {
       token,
