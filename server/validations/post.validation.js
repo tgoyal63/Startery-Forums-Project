@@ -19,7 +19,7 @@ class PostValidation {
         category: Joi.string(),
         page: Joi.number(),
         limit: Joi.number(),
-        author: Joi.string()
+        author: Joi.string(),
       }),
     };
   }
@@ -32,6 +32,16 @@ class PostValidation {
         category: Joi.string(),
         page: Joi.number(),
         limit: Joi.number(),
+      }),
+    };
+  }
+
+  static get updatePostSchema() {
+    return {
+      body: Joi.object({
+        title: Joi.string(),
+        content: Joi.string(),
+        category: Joi.string(),
       }),
     };
   }

@@ -55,6 +55,19 @@ class PostController {
     return controllerResponse(SUCCESSFUL.OK, "Posts Found", data);
   });
 
+  // Get post by id
+  getPostById = controllerBoilerPlate(async (req, res) => {
+    const data = await postService.search(req.params);
+    if (data.length === 0) {
+      throw new CustomError(
+        "Client error",
+        CLIENT_ERROR.NOT_FOUND,
+        "Post Not Found"
+      );
+    }
+    return controllerResponse(SUCCESSFUL.OK, "Post found ", data[0]);
+  });
+
   // Get posts
   getAllPosts = controllerBoilerPlate(async (req, res) => {
     if (req.query.author) {
@@ -97,10 +110,10 @@ class PostController {
   });
 
   // Check author and user and then update
-  // updatePost = controllerBoilerPlate(async (req, res) => {
-  //   const data = await postService.update(req.params.id, req.body);
-  //   return controllerResponse(SUCCESSFUL.OK, "Post Updated", data);
-  // });
+  updatePost = controllerBoilerPlate(async (req, res) => {
+    const data = await postService.update(req.params.id, req.body);
+    return controllerResponse(SUCCESSFUL.OK, "Post Updated", data);
+  });
 
   deletePost = controllerBoilerPlate(async (req, res) => {
     const data = await postService.deleteById(req.params.id);
@@ -117,7 +130,7 @@ class PostController {
       );
 
     const hasVoted = post[0][voteType]
-      .map(vote => vote.toString())
+      .map((vote) => vote.toString())
       .includes(req.user._id.toString());
 
     if (
@@ -141,7 +154,7 @@ class PostController {
 
     if (
       post[0].downvotes
-        .map(downvote => downvote.toString())
+        .map((downvote) => downvote.toString())
         .includes(req.user._id.toString())
     )
       post = await postService.removeDownvoteById(req.params.id, req.user._id);
@@ -155,7 +168,7 @@ class PostController {
 
     if (
       post[0].upvotes
-        .map(upvote => upvote.toString())
+        .map((upvote) => upvote.toString())
         .includes(req.user._id.toString())
     )
       post = await postService.removeUpvoteById(req.params.id, req.user._id);

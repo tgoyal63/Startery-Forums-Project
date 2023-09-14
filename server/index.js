@@ -11,6 +11,7 @@ const authRouter = require("./routes/auth.routes");
 const userRouter = require("./routes/user.routes");
 const postRouter = require("./routes/post.routes");
 const categoryRouter = require("./routes/category.routes");
+const commentRouter = require("./routes/comment.routes");
 
 // Create an instance of the Express application
 const app = express();
@@ -28,6 +29,7 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/posts", postRouter)
 app.use("/category", categoryRouter);
+app.use("/comments", commentRouter);
 
 // Define a 404 Error
 app.all("*", (req, res, next) => {

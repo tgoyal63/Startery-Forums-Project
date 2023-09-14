@@ -32,6 +32,7 @@ class UserController {
 
   deleteProfile = controllerBoilerPlate(async (req, res) => {
     const data = await userService.deleteById(req.user._id);
+    await categoryService.removeSubscriberFromAll(req.user._id);
     return controllerResponse(SUCCESSFUL.OK, "User Profile Deleted", data);
   });
 
@@ -66,9 +67,12 @@ class UserController {
   });
 
   subscribe = controllerBoilerPlate(async (req, res) => {
-    const category = await categoryService.search({
-      name: req.body.categoryName.toLowerCase(),
-    }, 1);
+    const category = await categoryService.search(
+      {
+        name: req.body.categoryName.toLowerCase(),
+      },
+      1
+    );
     if (category?.length === 0)
       throw new CustomError(
         "Client Error",
@@ -81,15 +85,24 @@ class UserController {
         CLIENT_ERROR.BAD_REQUEST,
         "Already Subscribed"
       );
-    const data = await userService.addSubscription(req.user._id, category[0]._id);
-    const categoryData = await categoryService.appendSubscriberById(category[0]._id, req.user._id);
+    const data = await userService.addSubscription(
+      req.user._id,
+      category[0]._id
+    );
+    const categoryData = await categoryService.appendSubscriberById(
+      category[0]._id,
+      req.user._id
+    );
     return controllerResponse(SUCCESSFUL.OK, "Subscription Added", data);
   });
 
   unsubscribe = controllerBoilerPlate(async (req, res) => {
-    const category = await categoryService.search({
-      name: req.body.categoryName.toLowerCase(),
-    }, 1);
+    const category = await categoryService.search(
+      {
+        name: req.body.categoryName.toLowerCase(),
+      },
+      1
+    );
     if (category?.length === 0)
       throw new CustomError(
         "Client Error",
@@ -102,15 +115,25 @@ class UserController {
         CLIENT_ERROR.BAD_REQUEST,
         "Not Subscribed"
       );
-    const data = await userService.removeSubscription(req.user._id, category[0]._id);
-    const categoryData = await categoryService.removeSubscriberById(category[0]._id, req.user._id);
+    const data = await userService.removeSubscription(
+      req.user._id,
+      category[0]._id
+    );
+    const categoryData = await categoryService.removeSubscriberById(
+      category[0]._id,
+      req.user._id
+    );
     return controllerResponse(SUCCESSFUL.OK, "Subscription Removed", data);
   });
 
   getSubscriptions = controllerBoilerPlate(async (req, res) => {
     const data = await userService.getSubscriptions(req.user._id);
-    const subscriptions = data.subscriptions.map((subscription) => subscription.name);
-    return controllerResponse(SUCCESSFUL.OK, "Subscriptions", {subscriptions});
+    const subscriptions = data.subscriptions.map(
+      (subscription) => subscription.name
+    );
+    return controllerResponse(SUCCESSFUL.OK, "Subscriptions", {
+      subscriptions,
+    });
   });
 }
 

@@ -59,6 +59,16 @@ class CategoryService {
         { $pull: { subscribers: new ObjectId(userId) } }
       )
   );
+
+  // Removing subscriber from all categories
+  removeSubscriberFromAll = serviceBoilerPlate(async (userId) => {
+    await category
+      .updateMany(
+        { subscribers: new ObjectId(userId) },
+        { $pull: { subscribers: new ObjectId(userId) } }
+      )
+      .exec();
+  });
 }
 
 module.exports = new CategoryService();
