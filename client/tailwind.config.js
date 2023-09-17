@@ -7,7 +7,8 @@ module.exports = {
         'dark-gray':'#A4A4A4',
         'light-gray':'#BDBDBD',
         'light-purple':'#E8D3E7',
-        'dark-purple':'#8A2387'
+        'dark-purple':'#8A2387',
+        'mainBg':'#F5F5F5',
       },
     }
   },

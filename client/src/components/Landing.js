@@ -1,9 +1,54 @@
 import React, { useState } from "react";
 import Navbar from "./Navbar";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Landing = () => {
+  const navigate = useNavigate();
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleRegister = async () => {
+    const response = await axios.post(
+      "https://startery-project-backend.onrender.com/auth/register",
+      {
+        username: username,
+        email: email,
+        password: password,
+        name: name,
+      }
+    );
+
+    if (response.data.statusCode === 201) {
+      window.alert("Registered Successfully");
+    } else {
+      window.alert("Unable to register");
+    }
+  };
+
+  const handleLogin = async () => {
+    const response = await axios.post(
+      "https://startery-project-backend.onrender.com/auth/login",
+      {
+        username: username,
+        password: password,
+      }
+    );
+
+    localStorage.setItem("token", response.data.data.token);
+
+    if (response.data.statusCode === 200) {
+      window.alert("Login Success");
+      navigate("/forumPg");
+    } else {
+      window.alert("Unable to login");
+    }
+  };
+
   return (
     <div>
       {<Navbar />}
@@ -41,15 +86,26 @@ const Landing = () => {
                       </button>
                     </div>
                     <div className="relative p-6 flex-auto">
-                      <form className=" px-8 pt-6 pb-8 w-full">
+                      <div className=" px-8 pt-6 pb-8 w-full">
                         <label className="block text-black text-md font-semibold mb-1 text-left">
                           Username
                         </label>
-                        <input className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2" />
+
+                        <input
+                          className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2"
+                          onChange={(e) => {
+                            setUsername(e.target.value);
+                          }}
+                        />
                         <label className="block text-black text-md font-semibold mb-1 text-left mt-4">
                           Name
                         </label>
-                        <input className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2" />
+                        <input
+                          className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2"
+                          onChange={(e) => {
+                            setName(e.target.value);
+                          }}
+                        />
                         <label
                           className="block text-black text-md font-semibold mb-1 text-left mt-4"
                           type="email"
@@ -60,15 +116,24 @@ const Landing = () => {
                           Email
                         </label>
                         <input
-                          type="password"
-                          id="password"
+                          type="email"
+                          id="email"
                           className=" shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2"
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                          }}
                         />
                         <label className="block text-black text-md font-semibold mb-1 text-left mt-4">
                           Password
                         </label>
-                        <input className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2" />
-                      </form>
+                        <input
+                          type="password"
+                          className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2"
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                          }}
+                        />
+                      </div>
                     </div>
                     <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                       <button
@@ -84,7 +149,10 @@ const Landing = () => {
                       <button
                         className="text-black bg-white a font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                         type="button"
-                        onClick={() => setShowModal1(false)}
+                        onClick={() => {
+                          handleRegister();
+                          setShowModal1(false);
+                        }}
                       >
                         Submit
                       </button>
@@ -112,23 +180,37 @@ const Landing = () => {
                       </button>
                     </div>
                     <div className="relative p-6 flex-auto">
-                      <form className=" px-8 pt-6 pb-8 w-full">
+                      <div className=" px-8 pt-6 pb-8 w-full">
                         <label className="block text-black text-md font-semibold mb-1 text-left">
                           Username
                         </label>
-                        <input className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2" />
+                        <input
+                          className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2"
+                          onChange={(e) => {
+                            setUsername(e.target.value);
+                          }}
+                        />
 
                         <label className="block text-black text-md font-semibold mb-1 text-left mt-4">
                           Password
                         </label>
-                        <input className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2" />
-                      </form>
+                        <input
+                          type="password"
+                          className="shadow appearance-none border rounded w-full h-8 py-2 px-1 text-black mt-2"
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                          }}
+                        />
+                      </div>
                     </div>
                     <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
                       <button
                         className="text-black bg-white  font-bold uppercase text-sm px-6 py-3 rounded border border-2 hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                         type="button"
-                        onClick={() => setShowModal2(false)}
+                        onClick={() => {
+                          handleLogin();
+                          setShowModal2(false);
+                        }}
                       >
                         Submit
                       </button>
