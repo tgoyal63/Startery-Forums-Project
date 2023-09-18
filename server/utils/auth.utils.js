@@ -50,36 +50,48 @@ const hashPassword = (password) => {
   return hash;
 };
 
-/**
- * Function to validate user data
- * @param {Object} data - User data
- * @returns {Object} res - User data from database
- * @throws {CustomError} If user not found or password is invalid
- */
-const validateUser = async (data) => {
-  let res;
-  // Checking if user exists in database
+const checkUser = async (data) => {
+  let user;
   if (data.hasOwnProperty("username"))
-    res = await checkExist("username", data.username.toLowerCase());
+    user = await checkExist("username", data.username.toLowerCase());
   else if (data.hasOwnProperty("email"))
-    res = await checkExist("email", data.email.toLowerCase());
-  if (!res)
+    user = await checkExist("email", data.email.toLowerCase());
+  if (!user)
     throw new CustomError(
       "Client Error",
       CLIENT_ERROR.NOT_FOUND,
       "User not found!"
     );
+  return user;
+}
 
+/**
+ * Function to validate user data
+ * @param {Object} data - User data
+ * @returns {Object} user - User data from database
+ * @throws {CustomError} If user not found or password is invalid
+ */
+const validateUser = async (data) => {
+  const user = await checkUser(data);
   // Checking if password is valid or not
-  const isPasswordValid = checkPassword(data.password, res.password);
+  const isPasswordValid = checkPassword(data.password, user.password);
   if (!isPasswordValid)
     throw new CustomError(
       "Client Error",
       CLIENT_ERROR.UNAUTHORIZED,
       "Invalid Password!"
     );
-  return res;
+  return user;
 };
+
+const generateRandomPassword = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_-+=<>?';
+  let password = '';
+  for (let i = 0; i < 10; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
 
 // Exporting functions
 module.exports = {
@@ -88,4 +100,6 @@ module.exports = {
   signToken,
   hashPassword,
   checkPassword,
+  checkUser,
+  generateRandomPassword
 };

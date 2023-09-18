@@ -7,8 +7,11 @@ const {
   signToken,
   validateUser,
   hashPassword,
+  checkUser,
+  generateRandomPassword,
 } = require("../utils/auth.utils");
 const { SUCCESSFUL } = require("../config/httpStatusCodes");
+const { sendMail } = require("../utils/mail.utils");
 
 class AuthController {
   register = controllerBoilerPlate(async (req, res) => {
@@ -36,6 +39,25 @@ class AuthController {
     return controllerResponse(SUCCESSFUL.OK, "Logged In Successfully!", {
       token,
     });
+  });
+
+  forgotPassword = controllerBoilerPlate(async (req, res) => {
+    const user = await checkUser(req.body);
+    const newPassword = generateRandomPassword();
+    const password = hashPassword(newPassword);
+    const token = signToken(user._id);
+    const { email, name } = await userService.updateById(user._id, {
+      password,
+      token,
+    });
+    const subject = "Startery Team | Reset Password";
+    const content = `Your new password is <b>${newPassword}</b><br>Use this password for logging in.`;
+    const mailData = sendMail({ email, name, subject, content });
+    return controllerResponse(
+      SUCCESSFUL.OK,
+      "Mail Sent Successfully!",
+      mailData
+    );
   });
 }
 

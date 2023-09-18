@@ -29,6 +29,19 @@ class AuthValidation {
       ),
     };
   }
+
+  static get forgotPasswordSchema() {
+    return {
+      body: Joi.alternatives().try(
+        Joi.object().keys({
+          username: Joi.string().required(),
+        }),
+        Joi.object().keys({
+          email: Joi.string().email().required(),
+        })
+      ),
+    };
+  }
 }
 
 module.exports = AuthValidation;

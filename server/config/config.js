@@ -22,4 +22,7 @@ module.exports = {
 
   // JWT Secret
   jwtSecret: process.env.JWT_SECRET || "secret",
+
+  // Mail API Key
+  mailAPIKey: process.env.MAIL_API_KEY || "",
 };
