@@ -63,10 +63,22 @@ class AuthMiddleware {
   static verifyPermission(docType) {
     return async (req, res, next) => {
       try {
-        const model =
-          docType === "Post" ? post : docType === "Comment" ? comment : user;
+        // Determine the type of resource being accessed.
+        let model;
+        switch (docType) {
+          case "Post":
+            model = post;
+            break;
+          case "Comment":
+            model = comment;
+            break;
+          case "User":
+            model = user;
+            break;
+          default:
+            throw new CustomError("Client Error", CLIENT_ERROR.BAD_REQUEST, "Invalid resource type");
+        }
         const data = await model.findById(req.params.id || req.id);
-        console.log(data);
         if (!data)
           throw new CustomError(
             "Client Error",
@@ -76,7 +88,7 @@ class AuthMiddleware {
         if (
           (docType === "user" &&
             data._id.toString() !== req.user._id.toString()) ||
-          data.author?.toString() !== req.user._id.toString()
+          (data.author && data.author?.toString() !== req.user._id.toString())
         )
           throw new CustomError(
             "Client Error",

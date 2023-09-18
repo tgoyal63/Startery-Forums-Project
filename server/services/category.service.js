@@ -7,8 +7,6 @@ const projectFields = {
   name: 1,
   description: 1,
   subscribersCount: { $size: "$subscribers" },
-  createdAt: 1,
-  updatedAt: 1,
   _id: 0,
 };
 
