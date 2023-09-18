@@ -8,7 +8,7 @@ const sendMail = async ({ email, name, subject, content }) => {
       email: "no-reply@startery.io",
     },
     to: [{ email, name}],
-    subject: "Hello world",
+    subject,
     htmlContent: `<html><head></head><body><p>Hello,</p>${content}</p></body></html>`,
   });
   let config = {
