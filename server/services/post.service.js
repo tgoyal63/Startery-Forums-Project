@@ -44,7 +44,7 @@ class PostService {
         { $match: { ...rest } },
         { $sort: { createdAt: -1 } },
         { $skip: skip },
-        { $limit: limit },
+        { $limit: Number(limit) },
         { $project: localProjectFields },
         // select username from users where _id = author
         {
@@ -75,11 +75,14 @@ class PostService {
 
   // Updating a post by its id in database
   updateById = serviceBoilerPlate(async (_id, data) => {
+    _id = new ObjectId(_id);
     const response = await post
       .findByIdAndUpdate(_id, data, {
         new: true,
-        projection: projectFields,
       })
+      .select(projectFields)
+      .populate({path: "author", transform: user => user.username})
+      .populate({path: "category", transform: category => category.name})
       .exec();
     return response;
   });
@@ -87,9 +90,10 @@ class PostService {
   // Deleting a post by its id from database
   deleteById = serviceBoilerPlate(async (_id) => {
     const data = await post
-      .findByIdAndDelete(_id, {
-        projection: projectFields,
-      })
+      .findByIdAndDelete(_id)
+      .select(projectFields)
+      .populate({path: "author", transform: user => user.username})
+      .populate({path: "category", transform: category => category.name})
       .exec();
     return data;
   });

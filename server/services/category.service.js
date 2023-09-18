@@ -18,13 +18,16 @@ class CategoryService {
   );
 
   // Searching for category by name in database
-  search = serviceBoilerPlate(
-    async (query, sensitive = 0) =>
-      await category
-        .find(query)
-        .select({ ...projectFields, _id: sensitive })
-        .exec()
-  );
+  search = serviceBoilerPlate(async (query, sensitive = 0) => {
+    let data = await category
+      .find(query)
+      .populate({ path: "subscribers", transform: (user) => user.username })
+      .select({ ...projectFields, _id: sensitive })
+      .exec();
+    if (!sensitive)
+      data.forEach((category) => (category.subscribers = undefined));
+    return data;
+  });
 
   // Updating a category by its id in database
   update = serviceBoilerPlate(
@@ -37,7 +40,8 @@ class CategoryService {
 
   // Deleting a category by its name from database
   delete = serviceBoilerPlate(
-    async (query) => await category.findOneAndDelete(query).exec()
+    async (query) =>
+      await category.findOneAndDelete(query).select(projectFields).exec()
   );
 
   // Appending subscriber in category

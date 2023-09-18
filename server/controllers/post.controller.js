@@ -111,7 +111,18 @@ class PostController {
 
   // Check author and user and then update
   updatePost = controllerBoilerPlate(async (req, res) => {
-    const data = await postService.update(req.params.id, req.body);
+    if (req.body.category) {
+      const category = await categoryService.search({ name: req.body.category }, 1);
+      if (category.length === 0) {
+        throw new CustomError(
+          "Client Error",
+          CLIENT_ERROR.NOT_FOUND,
+          "No Category Found"
+        );
+      }
+      req.body.category = category[0]._id;
+    }
+    const data = await postService.updateById(req.params.id, req.body);
     return controllerResponse(SUCCESSFUL.OK, "Post Updated", data);
   });
 

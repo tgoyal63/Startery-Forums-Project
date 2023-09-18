@@ -44,7 +44,7 @@ class CommentService {
         { $match: { ...rest } },
         { $sort: { createdAt: -1 } },
         { $skip: skip },
-        { $limit: limit },
+        { $limit: Number(limit) },
         { $project: localProjectFields },
         // select username from users where _id = author
         {
