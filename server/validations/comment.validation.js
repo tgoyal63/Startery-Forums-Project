@@ -24,6 +24,7 @@ class CommentValidation {
         post: Joi.string(),
         page: Joi.number(),
         limit: Joi.number(),
+        parentComment: Joi.string()
       }),
     };
   }

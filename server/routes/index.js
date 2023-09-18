@@ -22,7 +22,12 @@ class BaseRouter {
           throw new CustomError(
             "Validation Error",
             statusCode,
-            `${name}: ${details.body[0].context.message || details.body[0].message}`
+            `${(
+              details.body?.[0]?.context.message ||
+              details.body?.[0]?.message ||
+              details.query?.[0]?.context.message ||
+              details.query?.[0]?.message
+            )?.replace(/\"/g, "")}`
           );
         }
         throw err;

@@ -110,7 +110,7 @@ class CommentController {
 
   // Check author and user and then update
   updateComment = controllerBoilerPlate(async (req, res) => {
-    const data = await commentService.update(req.params.id, req.body);
+    const data = await commentService.updateById(req.params.id, req.body);
     return controllerResponse(SUCCESSFUL.OK, "Comment Updated", data);
   });
 
@@ -131,6 +131,9 @@ class CommentController {
     }
     if (data.post) {
       const post = await postService.removeCommentById(data.post, data._id);
+    }
+    if (data._doc.repliesCount > 0) {
+      const replies = await commentService.removeReplies(data._id);
     }
     return controllerResponse(SUCCESSFUL.OK, "Comment Deleted", data);
   });

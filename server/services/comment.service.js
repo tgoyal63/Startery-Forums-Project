@@ -20,7 +20,9 @@ class CommentService {
     if (data.parentComment)
       data.parentComment = new ObjectId(data.parentComment);
     if (data.post) data.post = new ObjectId(data.post);
-    const response = await comment.create(data);
+    const response = await (
+      await comment.create(data)
+    ).populate({ path: "author", transform: (user) => user.username });
     return response;
   });
 
@@ -31,6 +33,12 @@ class CommentService {
     if (query.commentId) {
       query._id = new ObjectId(query.commentId);
       delete query.commentId;
+    }
+    if (query.parentComment) {
+      query.parentComment = new ObjectId(query.parentComment);
+    }
+    if (query.post) {
+      query.post = new ObjectId(query.post);
     }
     if (sensitive) {
       localProjectFields.upvotes = 1;
@@ -65,10 +73,9 @@ class CommentService {
   // Updating a comment by its id in database
   updateById = serviceBoilerPlate(async (_id, data) => {
     const response = await comment
-      .findByIdAndUpdate(_id, data, {
-        new: true,
-        projection: projectFields,
-      })
+      .findByIdAndUpdate(_id, data, { new: true })
+      .select(projectFields)
+      .populate({ path: "author", transform: (user) => user.username })
       .exec();
     return response;
   });
@@ -76,9 +83,9 @@ class CommentService {
   // Deleting a comment by its id from database
   deleteById = serviceBoilerPlate(async (_id) => {
     const data = await comment
-      .findByIdAndDelete(_id, {
-        projection: projectFields,
-      })
+      .findByIdAndDelete(_id)
+      .select(projectFields)
+      .populate({ path: "author", transform: (user) => user.username })
       .exec();
     return data;
   });
@@ -106,6 +113,16 @@ class CommentService {
   // Removing reply from a comment by its id in database
   removeReplyById = (_id, commentId) =>
     this.updateById(_id, { $pull: { replies: commentId } });
+
+  // Removing all replies of a comment by commentId in database
+  removeReplies = async (parentComment) => {
+    parentComment = new ObjectId(parentComment);
+    return await comment
+      .deleteMany({ parentComment }, {new: true})
+      .select(projectFields)
+      .populate({ path: "author", transform: (user) => user.username })
+      .exec();
+  };
 }
 
 module.exports = new CommentService();

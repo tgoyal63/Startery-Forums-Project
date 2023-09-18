@@ -7,6 +7,7 @@ const { createPostSchema, searchPostsSchema, userPostsSchema, updatePostSchema }
 class PostRouter extends BaseRouter {
   initRoutes() {
     this.router.get("/me", verifyToken, postController.getUserPosts); // Get all posts by user with filters and pagination
+    this.router.post("/share", postController.sharePost);
     this.router.post("/:id/upvote", verifyToken, postController.upvotePost); // Upvote post by id
     this.router.post("/:id/downvote", verifyToken, postController.downvotePost); // Downvote post by id
     this.router.delete("/:id/upvote", verifyToken, postController.removeUpvotePost); // Remove upvote from post by id

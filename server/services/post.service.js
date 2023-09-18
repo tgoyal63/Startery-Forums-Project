@@ -77,12 +77,10 @@ class PostService {
   updateById = serviceBoilerPlate(async (_id, data) => {
     _id = new ObjectId(_id);
     const response = await post
-      .findByIdAndUpdate(_id, data, {
-        new: true,
-      })
+      .findByIdAndUpdate(_id, data, { new: true })
       .select(projectFields)
-      .populate({path: "author", transform: user => user.username})
-      .populate({path: "category", transform: category => category.name})
+      .populate({ path: "author", transform: (user) => user.username })
+      .populate({ path: "category", transform: (category) => category.name })
       .exec();
     return response;
   });
@@ -92,8 +90,8 @@ class PostService {
     const data = await post
       .findByIdAndDelete(_id)
       .select(projectFields)
-      .populate({path: "author", transform: user => user.username})
-      .populate({path: "category", transform: category => category.name})
+      .populate({ path: "author", transform: (user) => user.username })
+      .populate({ path: "category", transform: (category) => category.name })
       .exec();
     return data;
   });
@@ -123,8 +121,7 @@ class PostService {
     this.updateById(_id, { $pull: { comments: commentId } });
 
   // Adding share to a post by its id in database
-  addShareById = (_id, userId) =>
-    this.updateById(_id, { $addToSet: { shares: userId } });
+  addShareById = (_id) => this.updateById(_id, { $inc: { shares: 1 } });
 
   // Adding view to a post by its id in database
   addViewById = (_id) => this.updateById(_id, { $inc: { views: 1 } });

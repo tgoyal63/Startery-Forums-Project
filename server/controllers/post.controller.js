@@ -57,7 +57,7 @@ class PostController {
 
   // Get post by id
   getPostById = controllerBoilerPlate(async (req, res) => {
-    const data = await postService.search(req.params);
+    let data = await postService.search(req.params);
     if (data.length === 0) {
       throw new CustomError(
         "Client error",
@@ -65,7 +65,14 @@ class PostController {
         "Post Not Found"
       );
     }
+    data = await Promise.all(data.map(async post => await postService.addViewById(post._id)));
     return controllerResponse(SUCCESSFUL.OK, "Post found ", data[0]);
+  });
+
+  // Add share
+  sharePost = controllerBoilerPlate(async (req, res) => {
+    const data = await postService.addShareById(req.body.post);
+    return controllerResponse(SUCCESSFUL.OK, "Shared Post", data);
   });
 
   // Get posts
@@ -112,7 +119,10 @@ class PostController {
   // Check author and user and then update
   updatePost = controllerBoilerPlate(async (req, res) => {
     if (req.body.category) {
-      const category = await categoryService.search({ name: req.body.category }, 1);
+      const category = await categoryService.search(
+        { name: req.body.category },
+        1
+      );
       if (category.length === 0) {
         throw new CustomError(
           "Client Error",
