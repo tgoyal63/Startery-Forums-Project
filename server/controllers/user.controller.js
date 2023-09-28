@@ -41,6 +41,13 @@ class UserController {
       "username",
       req.params.username
     );
+    if (!data) {
+      throw new CustomError(
+        "Client Error",
+        CLIENT_ERROR.NOT_FOUND,
+        "User not found!"
+      );
+    }
     return controllerResponse(SUCCESSFUL.OK, "User Profile Data", data);
   });
 
